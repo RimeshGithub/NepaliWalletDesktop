@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
@@ -40,6 +40,7 @@ const navigation = [
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname()
+  const scrollRef = useRef(null)
 
   const { isOpen, open, close } = useSidebarStore()
 
@@ -146,8 +147,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto p-4 lg:p-6">
-          {children}
+        <main ref={scrollRef} className="flex-1 overflow-auto p-4 lg:p-6">
+          {typeof children === "function"
+            ? children({ scrollRef })
+            : children
+          }
         </main>
       </div>
     </div>

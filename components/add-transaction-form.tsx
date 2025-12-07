@@ -21,7 +21,7 @@ import '@sbmdkl/nepali-datepicker-reactjs/dist/index.css'
 import NepaliDate from "nepali-date-converter"
 import { getCurrency } from "@/hooks/use-currency"
 
-export function AddTransactionForm() {
+export function AddTransactionForm({ scrollToTopFunc }: { scrollToTopFunc: () => void }) {
   const { addTransaction } = useTransactions()
   const { expenseCategories, incomeCategories } = useCategories()
   const { accounts } = useAccounts()
@@ -61,6 +61,7 @@ export function AddTransactionForm() {
     e.preventDefault()
     setError("")
     setSuccess("")
+    scrollToTopFunc()
 
     if (type !== "transfer" && (!amount || !category || !date || !account)) {
       setError("Please fill in all fields")
@@ -142,6 +143,7 @@ export function AddTransactionForm() {
       }, 2000)
     } finally {
       setLoading(false)
+      scrollToTopFunc()
     }
   }
 
