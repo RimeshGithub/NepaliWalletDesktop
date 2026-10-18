@@ -86,7 +86,7 @@ export function AccountsList() {
   ]
 
   // Year options based on calendar type
-  const yearOptions = useBSDate ? [2080, 2081, 2082, 2083, 2084, 2085, 2086, 2087] : [2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030]
+  const yearOptions = useBSDate ? [2080, 2081, 2082, 2083, 2084, 2085, 2086, 2087, 2088, 2089, 2090] : [2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033]
   const monthOptions = useBSDate ? bsMonths : adMonths
 
   const incomeDisp = filteredTransactions.filter((t) => t.type === "income").reduce((acc, t) => acc + t.amount, 0)
@@ -683,7 +683,7 @@ export function AccountsList() {
           </Button>
         </div>
       </div>
-      <div className="space-y-4">
+      <div className="space-y-4 mb-10">
         {filteredTransactions.length === 0 ? (
           <Card><CardContent className="p-12 text-center">No transactions found</CardContent></Card>
         ) : (

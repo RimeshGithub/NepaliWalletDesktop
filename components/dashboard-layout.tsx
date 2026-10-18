@@ -115,7 +115,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   )
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-dvh overflow-hidden bg-background">
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:bg-card pt-3">
         <Sidebar />
@@ -147,7 +147,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         {/* Page Content */}
-        <main ref={scrollRef} className="flex-1 overflow-auto p-4 lg:p-6">
+        <main ref={scrollRef} className="relative flex-1 overflow-auto p-4 lg:p-6">
           {typeof children === "function"
             ? children({ scrollRef })
             : children

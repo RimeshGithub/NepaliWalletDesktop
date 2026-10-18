@@ -15,11 +15,9 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useCategories } from "@/hooks/use-categories"
 import { useAccounts } from "@/hooks/use-accounts"
 import { Loader2, Plus } from "lucide-react"
-import { format, set } from "date-fns"
-import DatePicker from '@sbmdkl/nepali-datepicker-reactjs'
-import '@sbmdkl/nepali-datepicker-reactjs/dist/index.css'
-import NepaliDate from "nepali-date-converter"
+import { format } from "date-fns"
 import { getCurrency } from "@/hooks/use-currency"
+import { BsDatePicker } from "@/components/bs-date-picker"
 
 export function AddTransactionForm({ scrollToTopFunc }: { scrollToTopFunc: () => void }) {
   const { addTransaction } = useTransactions()
@@ -33,13 +31,12 @@ export function AddTransactionForm({ scrollToTopFunc }: { scrollToTopFunc: () =>
   const [account1, setAccount1] = useState("")
   const [account2, setAccount2] = useState("")
   const [description, setDescription] = useState("")
-  const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"))
+  const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd")) // AD "yyyy-MM-dd" — single source of truth
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
 
   const categories = type === "expense" ? expenseCategories : incomeCategories
-  const bs = date ? new NepaliDate(new Date(date)).getBS() : ""
 
   const router = useRouter()
 
@@ -148,7 +145,7 @@ export function AddTransactionForm({ scrollToTopFunc }: { scrollToTopFunc: () =>
   }
 
   return (
-    <Card className="mb-80 max-w-3xl">
+    <Card className="max-w-3xl">
       <CardHeader>
         <CardTitle>New Transaction</CardTitle>
         <CardDescription>Add a new income or expense to track your finances</CardDescription>
@@ -195,7 +192,7 @@ export function AddTransactionForm({ scrollToTopFunc }: { scrollToTopFunc: () =>
               id="amount"
               type="number"
               autoComplete="off"
-              onWheel={(e) => e.target.blur()}
+              onWheel={(e) => (e.currentTarget as HTMLInputElement).blur()}
               step="1"
               placeholder="0"
               value={amount}
@@ -381,7 +378,7 @@ export function AddTransactionForm({ scrollToTopFunc }: { scrollToTopFunc: () =>
             />
           </div>
 
-          {/* Date */}
+          {/* Date — AD input and BS picker both read/write the same AD string */}
           <div className="space-y-2 text-xs">
             <Label htmlFor="date">Date</Label>
 
@@ -392,24 +389,14 @@ export function AddTransactionForm({ scrollToTopFunc }: { scrollToTopFunc: () =>
                   type="date"
                   value={date}
                   required
-                  onChange={(e) => setDate(e.target.value)}
+                  onChange={(e) => e.target.value && setDate(e.target.value)}
                   className="w-75 shadow-sm rounded-md p-2.5 mr-2 bg-white"
                 />
               </label>
               
               <label className="flex gap-1 items-center">
                 BS:
-                <div onClick={() => !date && setDate(format(new Date(), "yyyy-MM-dd"))}>
-                  <DatePicker               
-                    key={`${bs.year}-${bs.month}-${bs.date}`} 
-                    inputClassName="form-control"
-                    className="shadow-sm rounded-md px-2.5 py-1.5 w-75 cursor-default bg-white"
-                    defaultDate={`${bs.year}-${String(bs.month + 1).padStart(2, '0')}-${String(bs.date).padStart(2, '0')}`}
-                    onChange={(newDate) => setDate(newDate.adDate)}
-                    options={{ calenderLocale: 'ne', valueLocale: 'en' }}
-                    hideDefaultValue={!date}
-                  />
-                </div>  
+                <BsDatePicker value={date} onChange={setDate} disabled={loading} />
               </label>           
             </div>
           </div>

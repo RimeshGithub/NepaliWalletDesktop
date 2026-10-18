@@ -15,11 +15,8 @@ import { type Transaction } from "@/lib/types"
 import { useCategories } from "@/hooks/use-categories"
 import { useAccounts } from "@/hooks/use-accounts"
 import { Loader2, Edit } from "lucide-react"
-import DatePicker from '@sbmdkl/nepali-datepicker-reactjs'
-import '@sbmdkl/nepali-datepicker-reactjs/dist/index.css'
-import NepaliDate from "nepali-date-converter"
-import { format } from "date-fns"
 import { getCurrency } from "@/hooks/use-currency"
+import { BsDatePicker } from "@/components/bs-date-picker"
 
 interface EditTransactionFormProps {
   transaction: Transaction
@@ -33,7 +30,8 @@ export function EditTransactionForm({ transaction, onComplete, onCancel }: EditT
   const [category, setCategory] = useState(transaction.category)
   const [account, setAccount] = useState(transaction.account || "cash")
   const [description, setDescription] = useState(transaction.description)
-  const [date, setDate] = useState(transaction.date)
+  // AD "yyyy-MM-dd" — single source of truth. slice(0, 10) guards against ISO strings with a time part.
+  const [date, setDate] = useState(transaction.date.slice(0, 10))
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const { expenseCategories, incomeCategories } = useCategories()
@@ -41,7 +39,6 @@ export function EditTransactionForm({ transaction, onComplete, onCancel }: EditT
 
   const { updateTransaction } = useTransactions()
   const categories = type === "expense" ? expenseCategories : incomeCategories
-  const bs = date ? new NepaliDate(new Date(date)).getBS() : ""
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -134,7 +131,7 @@ export function EditTransactionForm({ transaction, onComplete, onCancel }: EditT
         />
       </div>
 
-      {/* Date */}
+      {/* Date — AD input and BS picker both read/write the same AD string */}
       <div className="space-y-2">
         <Label htmlFor="date">Date</Label>
         <div className="flex flex-col gap-2 px-2" id="date">
@@ -143,22 +140,13 @@ export function EditTransactionForm({ transaction, onComplete, onCancel }: EditT
             type="date"
             value={date}
             required
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(e) => e.target.value && setDate(e.target.value)}
             className="w-75 shadow-sm rounded-md p-2.5"
           /></label>
           
           <label className="flex items-center gap-2">BS:
-          <div onClick={() => !date && setDate(format(new Date(), "yyyy-MM-dd"))}>
-            <DatePicker               
-              key={`${bs.year}-${bs.month}-${bs.date}`} 
-              inputClassName="form-control"
-              className="shadow-sm rounded-md px-2.5 py-1.5 w-75 cursor-default"
-              defaultDate={`${bs.year}-${String(bs.month + 1).padStart(2, '0')}-${String(bs.date).padStart(2, '0')}`}
-              onChange={(newDate) => setDate(newDate.adDate)}
-              options={{ calenderLocale: 'ne', valueLocale: 'en' }}
-              hideDefaultValue={!date}
-            />
-          </div></label>            
+          <BsDatePicker value={date} onChange={setDate} disabled={loading} />
+          </label>            
         </div>
       </div>
 
